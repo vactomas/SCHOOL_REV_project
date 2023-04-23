@@ -33,12 +33,12 @@ void UART_PutStr(char * str){       // vypise retezec az do nuloveho znaku
     }    
 }
 
-void UART_putch(unsigned char data){
+void putch(char data){
     while(!TX1IF);
     TXREG1 = data;
 }
 
-char UART_getch (void){
+char getch (void){
     if (RCSTA1bits.OERR){
         RCSTA1bits.CREN = 0;
         RCSTA1bits.CREN = 1;

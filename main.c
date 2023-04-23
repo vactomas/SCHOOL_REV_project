@@ -17,13 +17,13 @@ void main(void) {
     
     init();
 
-//    GPIO();
+    GPIO();
     
-//    PWM();
+    // PWM();
     
-//    UART();
+    // UART();
     
-    ADC();
+    // ADC();
     
     return;
 }

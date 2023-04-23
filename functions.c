@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <xc.h>
+#include <xc.h>                 // XC8
 
-#include "lcd.h"
-#include "UART.h"
+#include "lcd.h"                // LCD knihovna
+#include "UART.h"               // UART knihovna
 
 #pragma config FOSC = HSMP      // External oscilator
 #pragma config PLLCFG = ON      // 4X PLL - 32MHz
@@ -16,7 +16,6 @@
 #define SETDUTY(x) CCPR1L = x
 
 void GPIO(void);
-void init_GPIO(void);
 void driveLED(char in);
 void init_UART(void);
 void UART(void);
@@ -25,26 +24,7 @@ void PWM(void);
 void init_ADC(void);
 void ADC();
 
-// void convert_val (int n, char *message) {
-//     int k, andmask, position = 0;
- 
-//     for (int i = 19; i >= 0; i--) {
-
-//         andmask = 1 << i;
-//         k = n & andmask;
-      
-//         if (k == 0) {
-//             message[position] = '0';
-//         } else {
-//             message[position] = '1';
-//         }
-//         position++;
-//     }
-// }
-
 void GPIO(void) {
-    
-    init_GPIO();
     
     char led_state = 0;
     
@@ -100,32 +80,36 @@ void UART(void) {
     init_UART();
     
     /*
-    A - .-
-    B - -...
-    C - -.-.
-    D - -..
-    E - . 
+    A - /.-/
+    B - /-.../
+    C - /-.-./
+    D - /-../
+    E - /./ 
     */
     
     while(1) {
         
         if(UART_CharAvailable()) {
             incoming_char = UART_GetChar();
-            
-            if(incoming_char == 'A') {
-                strncpy(message_out, ".-", 5);
-            } else if (incoming_char == 'B') {
-                strncpy(message_out, "-...", 5);
-            } else if (incoming_char == 'C') {
-                strncpy(message_out, "-.-.", 5);
-            } else if (incoming_char == 'D') {
-                strncpy(message_out, "-..", 5);
-            } else if (incoming_char == 'E') {
-                strncpy(message_out, ".", 5);
+
+            switch (incoming_char) {
+                case 'A':
+                    printf(".-");
+                    break;
+                case 'B':
+                    printf("-...");
+                    break;
+                case 'C':
+                    printf("-.-.");
+                    break;
+                case 'D':
+                    printf("-..");
+                    break;
+                case 'E':
+                    printf(".");
+                    break;
             }
-            
-            UART_PutStr(message_out);
-        }
+        }            
     }
 }
 
@@ -158,8 +142,10 @@ void ADC(void) {
         //     UART_PutChar(message[i]);
         // }
         
-        sprintf(message,"%lu\n", (long) pot12);
-        UART_PutStr(message);
+        // sprintf(message,"%lu\n", (long) pot12);
+        // UART_PutStr(message);
+
+        printf("%lu\n", (long) pot12);
 
         __delay_ms(50);
     }
@@ -201,23 +187,7 @@ void init(void) {
     PEIE = 1;                   // peripheral interrupt enable
     GIE = 1;                    // global interrupt enable
     
-    return;
-    
-}
-
-void init_GPIO(void) {
-    
-    // Turn off LEDs
-    
-    LATD2 = 1;
-    LATD3 = 1;
-    LATC4 = 1;
-    LATD4 = 1;
-    LATD5 = 1;
-    LATD6 = 1;
-    
-    return;
-    
+    driveLED(63);
 }
 
 void init_PWM(void) {
@@ -308,20 +278,16 @@ void init_ADC(void) {
     char ADC_init[16];
     sprintf(ADC_init, "ADC             ");
     LCD_ShowString(1, ADC_init);
-
-    char init_message[12] = "Hello there!";
-
-    UART_PutStr(init_message);
 }
 
 void driveLED(char in){
     
-        LATD2 = in & 1;         // LED0
-        LATD3 = in & 2 ? 1 : 0; // LED1
-        LATC4 = in & 4 ? 1 : 0; // LED2
-        LATD4 = in & 8 ? 1 : 0; // LED3
-        LATD5 = in & 16 ? 1 : 0;// LED4
-        LATD6 = in & 32 ? 1 : 0;// LED5
+        LATD2 = in & 1;             // LED0
+        LATD3 = in & 2 ? 1 : 0;     // LED1
+        LATC4 = in & 4 ? 1 : 0;     // LED2
+        LATD4 = in & 8 ? 1 : 0;     // LED3
+        LATD5 = in & 16 ? 1 : 0;    // LED4
+        LATD6 = in & 32 ? 1 : 0;    // LED5
         
         return;
 }
