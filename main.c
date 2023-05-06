@@ -78,13 +78,6 @@ void __interrupt() ISR_debouncer() {
         TMR5IF = 0;       
     }
 
-    // Timer3 reset
-
-    if (TMR3IF && TMR3IE) {
-        TMR3 = 0;
-        TMR3IF = 0;
-    }
-
 }
 
 
@@ -184,7 +177,7 @@ void main(void) {
                 printf("\nHW");
                 #endif
 
-                HW(&ACT_BTN4);
+                HW(&ACT_BTN1, &ACT_BTN4);
                 previous_menu_state = 7;
                 current_state = 0;
                 break;

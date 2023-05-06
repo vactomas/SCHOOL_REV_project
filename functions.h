@@ -16,7 +16,7 @@ void PWM(uint8_t *BTN4_debounce);
 void ADC(uint8_t *BTN4_debounce);
 void DAC(uint8_t *BTN4_debounce);
 void GAME(uint8_t *BTN1_debounce, uint8_t *BTN2_debounce, uint8_t *BTN4_debounce);
-void HW(uint8_t *BTN4_debounce);
+void HW(uint8_t *BTN1_debounce, uint8_t *BTN4_debounce);
 void init(void);
 
 #endif	/* FUNCTIONS_H */

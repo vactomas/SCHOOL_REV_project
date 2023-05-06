@@ -18,6 +18,44 @@ Author: Tomas Vacek
 #pragma config WDTEN = OFF      // Watchdog Timer OFF
 
 #define _XTAL_FREQ 32E6
+#define DAC_SS LATB3            // DAC slave select pin
+#define DAC_CH1 0b00110000      // channel 1/B
+#define DAC_CH2 0b10110000      // channel 2/A
+
+// #define DEBUG
+
+
+// Sintable
+
+const unsigned char table[400] =  
+   {
+   0x7f,0x80,0x82,0x84,0x86,0x88,0x8a,0x8c,0x8e,0x90,0x92,0x94,0x96,0x98,0x9a,0x9c,
+   0x9e,0xa0,0xa2,0xa4,0xa6,0xa8,0xa9,0xab,0xad,0xaf,0xb1,0xb3,0xb5,0xb6,0xb8,0xba,
+   0xbc,0xbd,0xbf,0xc1,0xc3,0xc4,0xc6,0xc7,0xc9,0xcb,0xcc,0xce,0xcf,0xd1,0xd2,0xd4,
+   0xd5,0xd7,0xd8,0xda,0xdb,0xdc,0xde,0xdf,0xe0,0xe2,0xe3,0xe4,0xe5,0xe6,0xe8,0xe9,
+   0xea,0xeb,0xec,0xed,0xee,0xef,0xf0,0xf1,0xf1,0xf2,0xf3,0xf4,0xf5,0xf5,0xf6,0xf7,
+   0xf7,0xf8,0xf8,0xf9,0xf9,0xfa,0xfa,0xfb,0xfb,0xfc,0xfc,0xfc,0xfc,0xfd,0xfd,0xfd,
+   0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfd,0xfc,0xfc,0xfc,
+   0xfb,0xfb,0xfa,0xfa,0xfa,0xf9,0xf8,0xf8,0xf7,0xf7,0xf6,0xf5,0xf5,0xf4,0xf3,0xf2,
+   0xf1,0xf1,0xf0,0xef,0xee,0xed,0xec,0xeb,0xea,0xe9,0xe8,0xe6,0xe5,0xe4,0xe3,0xe2,
+   0xe0,0xdf,0xde,0xdd,0xdb,0xda,0xd8,0xd7,0xd6,0xd4,0xd3,0xd1,0xd0,0xce,0xcc,0xcb,
+   0xc9,0xc8,0xc6,0xc4,0xc3,0xc1,0xbf,0xbe,0xbc,0xba,0xb8,0xb7,0xb5,0xb3,0xb1,0xaf,
+   0xad,0xac,0xaa,0xa8,0xa6,0xa4,0xa2,0xa0,0x9e,0x9c,0x9a,0x98,0x96,0x95,0x93,0x91,
+   0x8f,0x8d,0x8b,0x89,0x87,0x85,0x83,0x81,0x7f,0x7d,0x7b,0x79,0x77,0x75,0x73,0x71,
+   0x6f,0x6d,0x6b,0x69,0x67,0x65,0x63,0x61,0x5f,0x5d,0x5b,0x59,0x57,0x55,0x54,0x52,
+   0x50,0x4e,0x4c,0x4a,0x48,0x47,0x45,0x43,0x41,0x40,0x3e,0x3c,0x3a,0x39,0x37,0x36,
+   0x34,0x32,0x31,0x2f,0x2e,0x2c,0x2b,0x29,0x28,0x26,0x25,0x23,0x22,0x21,0x1f,0x1e,
+   0x1d,0x1b,0x1a,0x19,0x18,0x17,0x15,0x14,0x13,0x12,0x11,0x10,0xf,0xe,0xd,0xc,
+   0xc,0xb,0xa,0x9,0x8,0x8,0x7,0x6,0x6,0x5,0x5,0x4,0x4,0x3,0x3,0x2,
+   0x2,0x1,0x1,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+   0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x1,0x2,0x2,0x3,0x3,0x3,0x4,0x5,0x5,
+   0x6,0x6,0x7,0x8,0x8,0x9,0xa,0xb,0xc,0xc,0xd,0xe,0xf,0x10,0x11,0x12,
+   0x13,0x14,0x15,0x17,0x18,0x19,0x1a,0x1b,0x1d,0x1e,0x1f,0x20,0x22,0x23,0x25,0x26,
+   0x27,0x29,0x2a,0x2c,0x2d,0x2f,0x31,0x32,0x34,0x35,0x37,0x39,0x3a,0x3c,0x3e,0x3f,
+   0x41,0x43,0x45,0x46,0x48,0x4a,0x4c,0x4e,0x50,0x51,0x53,0x55,0x57,0x59,0x5b,0x5d,
+   0x5f,0x61,0x63,0x65,0x67,0x68,0x6a,0x6c,0x6e,0x70,0x72,0x74,0x76,0x78,0x7a,0x7c
+};
+
 
 // #define DEBUG
 
@@ -38,9 +76,10 @@ void init_DAC(void);
 void DAC(uint8_t *BTN4_debounce);
 void GAME(uint8_t *BTN1_debounce, uint8_t *BTN2_debounce, uint8_t *BTN4_debounce);
 void init_HW(void);
-void HW(uint8_t *BTN4_debounce);
+void HW(uint8_t *BTN1_debounce, uint8_t *BTN4_debounce);
 void driveLED(char in);
 void LCD_Update(char LCD_TEXT1[16], char LCD_TEXT2[16]);
+void SPIWrite(uint8_t channel, uint8_t data);
 
 
 // Menu
@@ -170,9 +209,9 @@ void GPIO(uint8_t *BTN4_debounce) {
     
     while (1) {
 
-        for (int8_t i = 5; i >= 0; i--) {
+        for (int8_t i = 0; i < 6; i++) {
 
-            led_state &= ~(1 << i);
+            led_state |= (1 << i);
             driveLED(led_state);
             __delay_ms(100);
 
@@ -185,9 +224,9 @@ void GPIO(uint8_t *BTN4_debounce) {
             break;
         }
 
-        for (int8_t i = 0; i < 6; i++) {
+        for (int8_t i = 5; i >= 0; i--) {
 
-            led_state |= (1 << i);
+            led_state &= ~(1 << i);
             driveLED(led_state);
             __delay_ms(100);
 
@@ -262,7 +301,7 @@ void UART(uint8_t *BTN4_debounce) {
     char LCD_TEXT1[16], LCD_TEXT2[16]; 
 
     sprintf(LCD_TEXT1, "      UART     ");
-    sprintf(LCD_TEXT2, "               ");
+    sprintf(LCD_TEXT2, "  BAUD: 19200  ");
 
     LCD_Update(LCD_TEXT1, LCD_TEXT2);
     
@@ -325,7 +364,10 @@ void ADC(uint8_t *BTN4_debounce) {
 
         __delay_ms(50);
 
-        if (*BTN4_debounce > 20) break;
+        if (*BTN4_debounce > 20) {
+            ADCON0bits.ADON = 0;        // ADC disable
+            break;
+        }
 
     }
     
@@ -333,11 +375,97 @@ void ADC(uint8_t *BTN4_debounce) {
 
 // DAC - triak
 
+// SPIWrite
+
+void SPIWrite(uint8_t channel, uint8_t data){
+    
+    uint8_t msb, lsb, flush;
+    msb = (channel | (data>>4));        // prvni bajt
+    lsb = (data<<4) & 0xF0;             // druhy bajt
+    DAC_SS = 0;                         // slave select
+    PIR1bits.SSPIF = 0;                 // vynulovani priznaku SPI
+    SSPBUF = msb;                       // zapis do bufferu
+    while(PIR1bits.SSPIF == 0)NOP();    // pockat nez SPI posle prvni bajt
+    
+    PIR1bits.SSPIF = 0;                 // vynulovani priznaku SPI
+    SSPBUF = lsb;                       // zapis do bufferu
+    while(PIR1bits.SSPIF == 0)NOP();    // pockat nez SPI posle druhy bajt
+    
+    DAC_SS = 1;                         // vypnout slave select
+    flush = SSPBUF;                     // vycteni bufferu
+    
+}
+
+
 void DAC(uint8_t *BTN4_debounce) {
+
+    uint16_t table_loc = 0;
+    uint8_t freq = 0;
+
+    init_DAC();
 
     while (1) {
 
-        if (*BTN4_debounce >= 20) break;
+
+        // Read POT2
+        
+        ADCON0bits.CHS = 5;             // AN5 - POT2
+
+            // Aproximation routine
+        
+        GODONE = 1;                     
+        while(GODONE);
+
+
+        // Triac
+
+        if (freq % 20 == 0) {
+
+            if (table_loc < 200 && (uint8_t)(((float)(ADRESH) / 255) * 100) < table_loc) {
+                
+                SPIWrite(DAC_CH2, table[table_loc]);
+
+            } else if (table_loc > 200 && table_loc < 399 && ((uint8_t)(((float)(ADRESH) / 255) * 100) + 200) < table_loc) {
+
+                SPIWrite(DAC_CH2, table[table_loc]);
+
+            } else SPIWrite(DAC_CH2, 127);
+
+            if (table_loc < 399) {
+                table_loc += 1;
+            } else table_loc = 0;
+
+            freq++;
+
+        } else {
+
+            freq++;
+            __delay_ms(1);
+        
+        }
+
+        if (freq == 240) freq = 0;
+
+
+        // Read data from DAC
+
+        ADCON0bits.CHS = 13;            // AN13
+
+            // Approximation routine 
+        GODONE = 1;                     
+        while(GODONE);                  
+        printf("%d,\r", ADRESH);        // Send data to Serial oscilloscope
+
+
+        // Turn off DAC
+
+        if (*BTN4_debounce >= 20) {
+            
+            SSP1CON1bits.SSPEN = 0;     // SPI disable
+            ADCON0bits.ADON = 0;        // ADC disable
+            
+            break;
+        }
 
     }
 
@@ -532,7 +660,7 @@ void GAME(uint8_t *BTN1_debounce, uint8_t *BTN2_debounce, uint8_t *BTN4_debounce
             sprintf(LCD_TEXT_1, "   GAME OVER!  ");
             sprintf(LCD_TEXT_2, "Distance: %i   ", distance);
             LCD_Update(LCD_TEXT_1, LCD_TEXT_2);
-            __delay_ms(4000);
+            __delay_ms(2000);
             break;
         }
     }
@@ -540,7 +668,26 @@ void GAME(uint8_t *BTN1_debounce, uint8_t *BTN2_debounce, uint8_t *BTN4_debounce
 
 // HW - optoclen
 
-void HW(uint8_t *BTN4_debounce) {
+void HW(uint8_t *BTN1_debounce, uint8_t *BTN4_debounce) {
+
+    init_HW();
+
+    while(1) {
+
+        if (*BTN1_debounce > 20) {
+
+            #ifdef DEBUG
+            printf("\nButton pressed");
+            #endif
+
+            LATBbits.LATB5 = 1;
+        } else LATBbits.LATB5 = 0;
+
+        __delay_ms(20);
+
+        if (*BTN4_debounce > 20) break;
+
+    }
 
 }
 
@@ -618,33 +765,18 @@ void init(void) {
 
     T3CONbits.TMR3CS = 0b00;    // source - instruction clock
     T3CONbits.T3CKPS = 0b11;    // prescaler
-    TMR3IE = 1;
     TMR3IF = 0;
-    TMR5ON = 1;
+    TMR3ON = 1;
 
 
     #ifdef DEBUG
     printf("\nTimer inits completed");
     #endif
 
-        
-    // // Timer 4
-
-    // // Clock input is fixed to instruction clock => 2 MHz
-    
-    // T4CONbits.T4CKPS = 0b10;        // 1:16 prescaler => 125 kHz    
-    // T4CONbits.T4OUTPS = 0b1111;     // 1:16 postscaler => 7.8125 kHz
-    
-    // PR4 = 200;                      
-        
-    // TMR4IE = 1;    
-    // TMR4IF = 0;
-    // TMR4ON = 1;
 
     driveLED(0);
 
     __delay_ms(500);
-
     
     driveLED(63);
 }
@@ -741,7 +873,7 @@ void init_ADC(void) {
     char LCD_TEXT1[16], LCD_TEXT2[16];
 
     sprintf(LCD_TEXT1, "      ADC      ");
-    sprintf(LCD_TEXT2, "               ");
+    sprintf(LCD_TEXT2, "  BAUD: 19200  ");
 
     LCD_Update(LCD_TEXT1, LCD_TEXT2);
 }
@@ -750,12 +882,31 @@ void init_ADC(void) {
 
 void init_DAC(void) {
 
+    /* vyber pinu jako vystupy */
+    TRISCbits.TRISC3 = 0;
+    TRISCbits.TRISC5 = 0;
+    TRISBbits.TRISB3 = 0;
+ 
+    LATBbits.LATB3 = 1;             // DAC SS off
+    
+    SSP1CON1bits.SSPM = 0b0010;     // SPI clock
+    SSP1STATbits.CKE = 1;
+    SSP1CON1bits.SSPEN = 1;         // SPI enable
+    
+    // ADC
+
+    ANSELBbits.ANSB5 = 1;
+    ADCON2bits.ADFM = 0;            //justified
+    ADCON2bits.ADCS = 0b110;        //Fosc/64
+    ADCON2bits.ACQT = 0b110;        //16
+    ADCON0bits.ADON = 1;            //ADC zapnout
+
     // LCD
 
     char LCD_TEXT1[16], LCD_TEXT2[16];
 
     sprintf(LCD_TEXT1, "      DAC      ");
-    sprintf(LCD_TEXT2, "               ");
+    sprintf(LCD_TEXT2, "  BAUD: 19200  ");
 
     LCD_Update(LCD_TEXT1, LCD_TEXT2);
 
@@ -765,12 +916,14 @@ void init_DAC(void) {
 
 void init_HW(void) {
 
+    TRISBbits.RB5 = 0;              // Set RB5 as output
+
     // LCD
 
     char LCD_TEXT1[16], LCD_TEXT2[16];
     
     sprintf(LCD_TEXT1, "       HW      ");
-    sprintf(LCD_TEXT2, "               ");
+    sprintf(LCD_TEXT2, "BTN1 to enable.");
 
     LCD_Update(LCD_TEXT1, LCD_TEXT2);
 
